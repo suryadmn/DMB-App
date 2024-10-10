@@ -1,2 +1,2 @@
 # DMB-App
-A Movie Database (TMDB) with features for movies, TV shows, actors, and images.
+A Movie Database (TMDB) App with features for movies, TV shows, actors, and images.
