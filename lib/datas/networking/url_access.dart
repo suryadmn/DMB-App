@@ -2,6 +2,8 @@
 class UrlAccess {
   /// Base URL for the API.
   static String urlBase = "https://api.themoviedb.org/";
+  static String urlBaseMedia =
+      "https://media.themoviedb.org/t/p/w220_and_h330_face";
 
   /// API version.
   static String apiVersion = "3/";
@@ -19,9 +21,33 @@ class UrlAccess {
   /// Session related paths.
   static String session = "session/";
 
+  /// Account related paths.
+  static String account = "account/";
+
+  /// Watchlist related paths.
+  static String watchlist = "watchlist/";
+
   /// Path for requesting a new token.
   static String newToken = "new";
 
+  /// Path for requesting a new session.
+  static String newSession = "new";
+
   /// Path for validating with login.
   static String validateWithLogin = "validate_with_login";
+
+  /// Path for requesting watch list.
+  static String movies = "movies";
+
+  /// Path for requesting watch list.
+  static String favorite = "favorite";
+
+  /// Path for requesting top rated.
+  static String topRated = "top_rated";
+
+  /// Path for requesting top rated.
+  static String nowPlaying = "now_playing";
+
+  /// Path for requesting top rated.
+  static String popular = "popular";
 }

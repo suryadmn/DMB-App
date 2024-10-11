@@ -1,3 +1,4 @@
+import 'package:dmb_app/utils/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../datas/routes/route_name.dart';
@@ -18,8 +19,18 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   }
 
   void initialize() {
-    Future.delayed(const Duration(seconds: 2)).whenComplete(() {
-      Navigator.pushReplacementNamed(context, loginRoute);
+    SharedPreferencesHelper.getHasLogin(
+            key: SharedPreferencesHelper.prefsHasLoginKey)
+        .then((hasLoginValue) {
+      if (hasLoginValue) {
+        Future.delayed(const Duration(seconds: 2)).whenComplete(() {
+          Navigator.pushReplacementNamed(context, mainRoute);
+        });
+      } else {
+        Future.delayed(const Duration(seconds: 2)).whenComplete(() {
+          Navigator.pushReplacementNamed(context, loginRoute);
+        });
+      }
     });
   }
 

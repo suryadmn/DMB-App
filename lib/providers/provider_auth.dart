@@ -1,3 +1,5 @@
+import 'package:dmb_app/datas/models/authentication/generate_session_id_response.dart';
+import 'package:dmb_app/datas/models/authentication/logout_response.dart';
 import 'package:flutter/material.dart';
 
 import '../datas/models/authentication/generate_token_response.dart';
@@ -12,6 +14,10 @@ class ProviderAuth extends ChangeNotifier {
       false; // Tracks loading state for generating token
   bool isLoadingCreateSession =
       false; // Tracks loading state for creating session
+  bool isLoadingGenerateSessionId =
+      false; // Tracks loading state for generating session id
+  bool isLoadingLogoutSession =
+      false; // Tracks loading state for logout session
 
   /// Generates a new token by making an API call.
   ///
@@ -88,6 +94,7 @@ class ProviderAuth extends ChangeNotifier {
         endPoint: UrlAccess.urlBase,
         authMode: 'bearer',
         token: UrlAccess.authorization,
+        mode: 'post_raw',
         path:
             '${UrlAccess.apiVersion}${UrlAccess.authentication}${UrlAccess.token}${UrlAccess.validateWithLogin}',
         param: {
@@ -133,5 +140,87 @@ class ProviderAuth extends ChangeNotifier {
 
     // Return the session login response (or empty if there was an error)
     return sessionLoginResponse;
+  }
+
+  Future<GenerateSessionIdResponse> generateSessionId(
+      {required String requestToken}) async {
+    isLoadingGenerateSessionId = true;
+
+    GenerateSessionIdResponse generateSessionIdResponse =
+        GenerateSessionIdResponse();
+
+    await configDio(
+        endPoint: UrlAccess.urlBase,
+        authMode: 'bearer',
+        token: UrlAccess.authorization,
+        mode: 'post_raw',
+        path:
+            '${UrlAccess.apiVersion}${UrlAccess.authentication}${UrlAccess.session}${UrlAccess.newSession}',
+        param: {
+          'request_token': requestToken,
+        }).then((response) async {
+      if (response?.statusCode == 200) {
+        generateSessionIdResponse =
+            GenerateSessionIdResponse.fromJson(response?.data);
+
+        if (generateSessionIdResponse.success ?? false) {
+          await SharedPreferencesHelper.setNewToken(
+              token: generateSessionIdResponse.sessionId ?? "");
+        }
+
+        isLoadingGenerateToken = false;
+      } else {
+        isLoadingGenerateToken = false;
+
+        debugPrint(
+            'generateToken error with status code: ${response?.statusCode}');
+      }
+    }).onError((error, stackTrace) {
+      isLoadingGenerateToken = false;
+
+      debugPrint('generateToken config error: $error');
+    });
+
+    // Notify listeners to rebuild UI when loading state changes
+    notifyListeners();
+
+    return generateSessionIdResponse;
+  }
+
+  Future<LogoutResponse> sessionLogout({
+    required String sessionId,
+  }) async {
+    isLoadingLogoutSession = true;
+    notifyListeners();
+
+    LogoutResponse logoutResponse = LogoutResponse();
+
+    await configDio(
+        endPoint: UrlAccess.urlBase,
+        authMode: 'bearer',
+        token: UrlAccess.authorization,
+        mode: 'delete',
+        path:
+            '${UrlAccess.apiVersion}${UrlAccess.authentication}${UrlAccess.session.replaceAll('/', '')}',
+        param: {'session_id': sessionId}).then((response) {
+      if (response?.statusCode == 200) {
+        logoutResponse = LogoutResponse.fromJson(response?.data);
+
+        isLoadingLogoutSession = false;
+      } else {
+        isLoadingLogoutSession = false;
+
+        debugPrint(
+            'sessionLogin failed with status code: ${response?.statusCode}');
+      }
+    }).onError((error, stackTrace) {
+      isLoadingLogoutSession = false;
+
+      debugPrint('sessionLogin config error: $error');
+    });
+
+    notifyListeners();
+
+    return logoutResponse;
   }
 }

@@ -119,9 +119,14 @@ class _LoginPageState extends State<LoginPage> {
             password: passwordController.text,
             requestToken: tokenValue,
           )
-              .then((sessionLoginResponseValue) {
+              .then((sessionLoginResponseValue) async {
             // If login is successful
             if (sessionLoginResponseValue.success ?? false) {
+              await SharedPreferencesHelper.setNewToken(
+                  token: sessionLoginResponseValue.requestToken ?? "");
+
+              await SharedPreferencesHelper.setHasLogin();
+
               SnackbarHelper.show(
                 context,
                 "Successfully logged in",
@@ -129,8 +134,8 @@ class _LoginPageState extends State<LoginPage> {
                 textColor: ColorPalleteHelper.white,
               );
 
-              // Navigate to the splash screen after successful login
-              Navigator.pushReplacementNamed(context, splashScreenRoute);
+              // Navigate to the main page after successful login
+              Navigator.pushReplacementNamed(context, mainRoute);
             } else {
               // Display an error message if login fails
               SnackbarHelper.show(

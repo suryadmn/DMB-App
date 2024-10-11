@@ -35,4 +35,7 @@ class ColorPalleteHelper {
 
   /// Error color, used to indicate errors or critical issues in the UI.
   static const Color error = Color(0xFFc6231d);
+
+  static const pink = Color(0xFFF670C7);
+  static const pink400 = Color(0xFFF670C7);
 }

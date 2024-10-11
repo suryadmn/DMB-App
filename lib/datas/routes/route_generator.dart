@@ -1,6 +1,10 @@
+import 'package:dmb_app/pages/main_page/home_page/detail_movie_page.dart';
+import 'package:dmb_app/pages/main_page/profile_page/favourite_movie_page.dart';
+import 'package:dmb_app/pages/main_page/profile_page/watchlist_movie_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../pages/authentication_page/login_page/login_page.dart';
+import '../../pages/main_page/main_page.dart';
 import '../../pages/not_found_page/not_found_page.dart';
 import '../../pages/splash_screen_page/splash_screen_page.dart';
 import 'route_name.dart';
@@ -24,6 +28,18 @@ class RouteGenerator {
 
       // Login route
       loginRoute: (_) => const LoginPage(),
+
+      // Main route
+      mainRoute: (_) => const MainPage(),
+
+      //  Watchlist Movie route
+      watchlistMovieRoute: (_) => const WatchlistMoviePage(),
+
+      // Favourite Movie route
+      favouriteMovieRoute: (_) => const FavouriteMoviePage(),
+
+      // Detail Movie route
+      detailMovieRoute: (_) => const DetailMoviePage(),
     };
 
     // Get the widget builder for the route
