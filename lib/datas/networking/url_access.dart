@@ -1,21 +1,27 @@
+/// A class that holds constants for API URL access.
 class UrlAccess {
-  // Url Base
+  /// Base URL for the API.
   static String urlBase = "https://api.themoviedb.org/";
 
-  // Api version
+  /// API version.
   static String apiVersion = "3/";
 
-  // Authorization: Bearer
+  /// Authorization Bearer token.
   static String authorization =
       "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNDRkZDg5MDE5NTgwOWRmMmNiYmEzZjUxZGM0MDViMiIsIm5iZiI6MTcyODU3MzY1NC43NjAyNTcsInN1YiI6IjY3MDcyZTc4NjcxODAxMmZjMjMzNmVlZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BAIbldhIY4gJTsz_u_-eDSafAb6qXqzyo54ZWvWC4jk";
 
-  // authentication
+  /// Authentication related paths.
   static String authentication = "authentication/";
-  // Token
+
+  /// Token related paths.
   static String token = "token/";
-  // Session
+
+  /// Session related paths.
   static String session = "session/";
-  // Path request
+
+  /// Path for requesting a new token.
   static String newToken = "new";
+
+  /// Path for validating with login.
   static String validateWithLogin = "validate_with_login";
 }

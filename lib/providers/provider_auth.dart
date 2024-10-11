@@ -6,15 +6,22 @@ import '../datas/networking/url_access.dart';
 import '../datas/services_dio/settings_dio.dart';
 import '../utils/shared_preferences_helper.dart';
 
+/// Provider class for managing authentication-related logic and state.
 class ProviderAuth extends ChangeNotifier {
-  bool isLoadingGenerateToken = false;
-  bool isLoadingCreateSession = false;
+  bool isLoadingGenerateToken =
+      false; // Tracks loading state for generating token
+  bool isLoadingCreateSession =
+      false; // Tracks loading state for creating session
 
+  /// Generates a new token by making an API call.
+  ///
+  /// Returns a [GenerateTokenResponse] with the new token or an empty response
+  /// if the API call fails. Updates the loading state accordingly.
   Future<GenerateTokenResponse> generateToken() async {
-    // Set loading genarate token to true
+    // Set loading state for token generation to true
     isLoadingGenerateToken = true;
 
-    // Initialize model
+    // Initialize the token response model
     GenerateTokenResponse generateTokenResponse = GenerateTokenResponse();
 
     await configDio(
@@ -24,51 +31,57 @@ class ProviderAuth extends ChangeNotifier {
       path:
           '${UrlAccess.apiVersion}${UrlAccess.authentication}${UrlAccess.token}${UrlAccess.newToken}',
     ).then((response) async {
-      // Check if response with status code 200
+      // Check if the response has status code 200 (successful request)
       if (response?.statusCode == 200) {
         generateTokenResponse = GenerateTokenResponse.fromJson(response?.data);
 
-        // Set new generate token to prefs
+        // Save the new token to shared preferences
         await SharedPreferencesHelper.setNewToken(
             token: generateTokenResponse.requestToken ?? "");
 
-        // Set loading genarate token to false
+        // Set loading state for token generation to false
         isLoadingGenerateToken = false;
       } else {
-        // Else if status code not 200
+        // Handle non-200 status code (request failed)
 
-        // Set loading genarate token to false
+        // Set loading state for token generation to false
         isLoadingGenerateToken = false;
 
         debugPrint(
             'generateToken error with status code: ${response?.statusCode}');
       }
     }).onError((error, stackTrace) {
-      // If there is error with config
+      // Handle any errors during the token generation process
 
-      // Set loading genarate token to false
+      // Set loading state for token generation to false
       isLoadingGenerateToken = false;
 
       debugPrint('generateToken config error: $error');
     });
 
-    // Update the state
+    // Notify listeners to rebuild UI when loading state changes
     notifyListeners();
 
-    // Return the data response
+    // Return the token response (or empty if there was an error)
     return generateTokenResponse;
   }
 
+  /// Attempts to log in by validating the provided username, password, and request token.
+  ///
+  /// This method performs an API call to create a session. It requires a valid [username],
+  /// [password], and [requestToken]. Returns a [SessionLoginResponse] with the session
+  /// information or an empty response if the login fails.
   Future<SessionLoginResponse> sessionLogin({
     required BuildContext context,
     required String username,
     required String password,
     required String requestToken,
   }) async {
-    // Set loading session login to true
+    // Set loading state for session creation to true
     isLoadingCreateSession = true;
     notifyListeners();
 
+    // Initialize the session login response model
     SessionLoginResponse sessionLoginResponse = SessionLoginResponse();
 
     await configDio(
@@ -82,43 +95,43 @@ class ProviderAuth extends ChangeNotifier {
           'password': password,
           'request_token': requestToken
         }).then((response) {
-      // Check if response with status code 200
+      // Check if the response has status code 200 (successful login)
       if (response?.statusCode == 200) {
         sessionLoginResponse = SessionLoginResponse.fromJson(response?.data);
 
-        // Set loading session login to false
+        // Set loading state for session creation to false
         isLoadingCreateSession = false;
       } else if (response?.statusCode == 401) {
-        // Else if status code 401
-
+        // Handle status code 401 (unauthorized or invalid credentials)
         sessionLoginResponse = SessionLoginResponse.fromJson(response?.data);
 
-        // Set loading session login to false
+        // Set loading state for session creation to false
         isLoadingCreateSession = false;
 
         debugPrint(
-            'generateToken failed login with status code: ${response?.statusCode}');
+            'sessionLogin failed with status code: ${response?.statusCode}');
       } else {
-        // Else if status code not 200 and 401
+        // Handle other non-200 status codes (failed request)
 
-        // Set loading session login to false
+        // Set loading state for session creation to false
         isLoadingCreateSession = false;
 
         debugPrint(
-            'generateToken failed login with status code: ${response?.statusCode}');
+            'sessionLogin failed with status code: ${response?.statusCode}');
       }
     }).onError((error, stackTrace) {
-      // If there is error with config
+      // Handle any errors during the session creation process
 
-      // Set loading session login to false
+      // Set loading state for session creation to false
       isLoadingCreateSession = false;
 
-      debugPrint('generateToken config error: $error');
+      debugPrint('sessionLogin config error: $error');
     });
 
-    // Update the state
+    // Notify listeners to rebuild UI when loading state changes
     notifyListeners();
 
+    // Return the session login response (or empty if there was an error)
     return sessionLoginResponse;
   }
 }

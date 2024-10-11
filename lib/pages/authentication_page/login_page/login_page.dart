@@ -9,6 +9,8 @@ import '../../../utils/snackbar_helper.dart';
 import '../../../widgets/elevated_button_widget.dart';
 import '../../../widgets/input_field_widget.dart';
 
+/// LoginPage widget, responsible for displaying the login form and handling
+/// user authentication.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -17,27 +19,28 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Global key auth formm
+  /// Global key for managing the form state.
   GlobalKey<FormState> formGlobalKey = GlobalKey<FormState>();
 
-  // Text editing contoller
+  /// Text controllers for capturing user input.
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  // Provider
+  /// Provider for authentication logic.
   ProviderAuth? providerAuth;
 
   @override
   void initState() {
     initialize();
-
     super.initState();
   }
 
+  /// Initializes the necessary resources for the login page, such as generating
+  /// an authentication token.
   void initialize() {
     providerAuth = Provider.of<ProviderAuth>(context, listen: false);
 
-    // Generate token and save to prefs
+    // Generates a new token and saves it to shared preferences.
     providerAuth?.generateToken();
   }
 
@@ -58,13 +61,16 @@ class _LoginPageState extends State<LoginPage> {
               key: formGlobalKey,
               child: Column(
                 children: [
+                  // Username input field
                   InputFieldWidget(
                     textEditingController: usernameController,
                     labelText: 'Username',
                     hintText: 'Please insert username',
-                    errorMsgText: 'Please fill out this the username',
+                    errorMsgText: 'Please fill out the username',
                   ),
                   const SizedBox(height: 8),
+
+                  // Password input field
                   InputFieldWidget(
                     textEditingController: passwordController,
                     isPasswordField: true,
@@ -76,52 +82,67 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 16),
+
+            // Login button with loading state management
             ElevatedButtonWidget(
               buttonTitle: 'Login',
               isShowLoading:
                   Provider.of<ProviderAuth>(context).isLoadingCreateSession,
-              onPressed: () async {
-                if (formGlobalKey.currentState!.validate()) {
-                  // Get token from prefs
-                  await SharedPreferencesHelper.getToken(
-                          key: SharedPreferencesHelper.prefsTokenKey)
-                      .then((tokenValue) async {
-                    if (tokenValue.isNotEmpty) {
-                      // Do login
-                      await providerAuth
-                          ?.sessionLogin(
-                        context: context,
-                        username: usernameController.text,
-                        password: passwordController.text,
-                        requestToken: tokenValue,
-                      )
-                          .then((sessionLoginResponsevalue) {
-                        if (sessionLoginResponsevalue.success ?? false) {
-                          SnackbarHelper.show(
-                            context,
-                            "Successfully login",
-                            backgroundColor: Theme.of(context).primaryColor,
-                            textColor: ColorPalleteHelper.white,
-                          );
-                          Navigator.pushReplacementNamed(
-                              context, splashScreenRoute);
-                        } else {
-                          SnackbarHelper.show(
-                            context,
-                            sessionLoginResponsevalue.statusMessage,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            textColor: ColorPalleteHelper.white,
-                          );
-                        }
-                      });
-                    }
-                  });
-                }
+              onPressed: () {
+                login();
               },
             )
           ],
         ),
       ),
     );
+  }
+
+  /// Handles the login process by validating the form and sending a login request.
+  ///
+  /// If successful, it navigates the user to the next screen; otherwise, it displays
+  /// an error message.
+  Future<void> login() async {
+    // Check if the form is valid
+    if (formGlobalKey.currentState!.validate()) {
+      // Retrieve token from shared preferences
+      await SharedPreferencesHelper.getToken(
+              key: SharedPreferencesHelper.prefsTokenKey)
+          .then((tokenValue) async {
+        // Check if the retrieved token is not empty
+        if (tokenValue.isNotEmpty) {
+          // Send login request using the provided credentials and token
+          await providerAuth
+              ?.sessionLogin(
+            context: context,
+            username: usernameController.text,
+            password: passwordController.text,
+            requestToken: tokenValue,
+          )
+              .then((sessionLoginResponseValue) {
+            // If login is successful
+            if (sessionLoginResponseValue.success ?? false) {
+              SnackbarHelper.show(
+                context,
+                "Successfully logged in",
+                backgroundColor: Theme.of(context).primaryColor,
+                textColor: ColorPalleteHelper.white,
+              );
+
+              // Navigate to the splash screen after successful login
+              Navigator.pushReplacementNamed(context, splashScreenRoute);
+            } else {
+              // Display an error message if login fails
+              SnackbarHelper.show(
+                context,
+                sessionLoginResponseValue.statusMessage ?? "",
+                backgroundColor: Theme.of(context).primaryColor,
+                textColor: ColorPalleteHelper.white,
+              );
+            }
+          });
+        }
+      });
+    }
   }
 }
