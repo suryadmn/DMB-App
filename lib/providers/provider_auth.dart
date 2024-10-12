@@ -78,10 +78,10 @@ class ProviderAuth extends ChangeNotifier {
   /// [password], and [requestToken]. Returns a [SessionLoginResponse] with the session
   /// information or an empty response if the login fails.
   Future<SessionLoginResponse> sessionLogin({
-    required BuildContext context,
-    required String username,
-    required String password,
-    required String requestToken,
+    required BuildContext context, // The context for the widget tree
+    required String username, // The username for authentication
+    required String password, // The password for authentication
+    required String requestToken, // The request token for login validation
   }) async {
     // Set loading state for session creation to true
     isLoadingCreateSession = true;
@@ -98,9 +98,9 @@ class ProviderAuth extends ChangeNotifier {
         path:
             '${UrlAccess.apiVersion}${UrlAccess.authentication}${UrlAccess.token}${UrlAccess.validateWithLogin}',
         param: {
-          'username': username,
-          'password': password,
-          'request_token': requestToken
+          'username': username, // Username for the login request
+          'password': password, // Password for the login request
+          'request_token': requestToken // Request token for the login request
         }).then((response) {
       // Check if the response has status code 200 (successful login)
       if (response?.statusCode == 200) {
@@ -142,6 +142,11 @@ class ProviderAuth extends ChangeNotifier {
     return sessionLoginResponse;
   }
 
+  /// Generates a new session ID using the provided request token.
+  ///
+  /// This method makes an API call to create a session ID. It requires a valid [requestToken].
+  /// Returns a [GenerateSessionIdResponse] containing the session ID or an empty response
+  /// if the API call fails.
   Future<GenerateSessionIdResponse> generateSessionId(
       {required String requestToken}) async {
     isLoadingGenerateSessionId = true;
@@ -157,13 +162,14 @@ class ProviderAuth extends ChangeNotifier {
         path:
             '${UrlAccess.apiVersion}${UrlAccess.authentication}${UrlAccess.session}${UrlAccess.newSession}',
         param: {
-          'request_token': requestToken,
+          'request_token': requestToken, // Request token for session generation
         }).then((response) async {
       if (response?.statusCode == 200) {
         generateSessionIdResponse =
             GenerateSessionIdResponse.fromJson(response?.data);
 
         if (generateSessionIdResponse.success ?? false) {
+          // Save the new session ID to shared preferences
           await SharedPreferencesHelper.setNewToken(
               token: generateSessionIdResponse.sessionId ?? "");
         }
@@ -184,11 +190,16 @@ class ProviderAuth extends ChangeNotifier {
     // Notify listeners to rebuild UI when loading state changes
     notifyListeners();
 
+    // Return the generated session ID response (or empty if there was an error)
     return generateSessionIdResponse;
   }
 
+  /// Logs out of the current session using the provided session ID.
+  ///
+  /// This method performs an API call to log out. It requires a valid [sessionId].
+  /// Returns a [LogoutResponse] indicating the result of the logout operation.
   Future<LogoutResponse> sessionLogout({
-    required String sessionId,
+    required String sessionId, // The session ID to log out
   }) async {
     isLoadingLogoutSession = true;
     notifyListeners();
@@ -202,7 +213,8 @@ class ProviderAuth extends ChangeNotifier {
         mode: 'delete',
         path:
             '${UrlAccess.apiVersion}${UrlAccess.authentication}${UrlAccess.session.replaceAll('/', '')}',
-        param: {'session_id': sessionId}).then((response) {
+        param: {'session_id': sessionId} // Session ID for logout request
+        ).then((response) {
       if (response?.statusCode == 200) {
         logoutResponse = LogoutResponse.fromJson(response?.data);
 
@@ -219,8 +231,10 @@ class ProviderAuth extends ChangeNotifier {
       debugPrint('sessionLogin config error: $error');
     });
 
+    // Notify listeners to rebuild UI when loading state changes
     notifyListeners();
 
+    // Return the logout response (or empty if there was an error)
     return logoutResponse;
   }
 }

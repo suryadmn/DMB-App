@@ -45,26 +45,30 @@ class ElevatedButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: buttonHeight ?? 48, // Default height
-      width: buttonWidth ?? double.infinity, // Default width
+      height: buttonHeight ?? 48, // Default height of the button
+      width: buttonWidth ?? double.infinity, // Default width of the button
       decoration: BoxDecoration(
         color: disabledButton ?? false
-            ? ColorPalleteHelper.primary100 // Disabled color
-            : buttonColor ?? Theme.of(context).primaryColor, // Button color
-        borderRadius: BorderRadius.circular(8), // Rounded corners
+            ? ColorPalleteHelper.primary100 // Color when the button is disabled
+            : buttonColor ??
+                Theme.of(context)
+                    .primaryColor, // Background color of the button
+        borderRadius:
+            BorderRadius.circular(8), // Rounded corners for the button
       ),
       child: ElevatedButton(
         // Define button press behavior based on loading and disabled state
         onPressed: isShowLoading
-            ? () {} // No action during loading
+            ? () {} // Do nothing when loading
             : disabledButton ?? false
-                ? () {} // No action if disabled
-                : onPressed, // Call provided onPressed function
+                ? () {} // Do nothing if the button is disabled
+                : onPressed, // Call the provided onPressed function
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent, // Transparent background
-          shadowColor: Colors.transparent, // No shadow
+          backgroundColor: Colors.transparent, // Make background transparent
+          shadowColor: Colors.transparent, // Remove shadow
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // Rounded corners
+            borderRadius:
+                BorderRadius.circular(8), // Rounded corners for the button
             side: BorderSide(
               color: disabledButton ?? false
                   ? ColorPalleteHelper.white // Border color when disabled
@@ -76,35 +80,40 @@ class ElevatedButtonWidget extends StatelessWidget {
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center, // Center align child
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center align children in the row
           children: [
             // Loading indicator visibility
             Visibility(
-              visible: isShowLoading,
+              visible:
+                  isShowLoading, // Show loading indicator based on isShowLoading
               child: Container(
-                width: 24,
-                height: 24,
-                margin: const EdgeInsets.only(right: 10.0), // Spacing
+                width: 24, // Width of the loading indicator
+                height: 24, // Height of the loading indicator
+                margin: const EdgeInsets.only(
+                    right: 10.0), // Spacing between loading indicator and text
                 child: const CircularProgressIndicator(
-                  color: ColorPalleteHelper.white, // Loading indicator color
-                  strokeWidth: 3.0, // Thickness of loading indicator
+                  color: ColorPalleteHelper
+                      .white, // Color of the loading indicator
+                  strokeWidth: 3.0, // Thickness of the loading indicator
                 ),
               ),
             ),
             // Button title visibility
             Visibility(
-              visible: !isShowLoading,
+              visible: !isShowLoading, // Show button title when not loading
               child: Expanded(
                 child: Text(
-                  "$buttonTitle ",
-                  maxLines: 1, // Limit text to one line
-                  overflow: TextOverflow.ellipsis, // Handle overflow
-                  textAlign: TextAlign.center, // Center align text
+                  "$buttonTitle ", // Button title text
+                  maxLines: 1, // Limit to one line
+                  overflow: TextOverflow.ellipsis, // Handle text overflow
+                  textAlign: TextAlign.center, // Center align button title
                   style: TextStyle(
                     color: buttonTextColor ??
                         ColorPalleteHelper.white, // Text color
-                    fontSize: 16, // Font size
-                    fontWeight: FontWeight.w600, // Font weight
+                    fontSize: 16, // Font size of the button title
+                    fontWeight:
+                        FontWeight.w600, // Font weight of the button title
                   ),
                 ),
               ),

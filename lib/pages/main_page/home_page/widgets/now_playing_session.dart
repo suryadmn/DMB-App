@@ -25,7 +25,9 @@ class NowPlayingSession extends StatefulWidget {
 }
 
 class _NowPlayingSessionState extends State<NowPlayingSession> {
+  // Temp watclist
   List<int> watchlistIdTmp = [];
+  // Temp favourite
   List<int> favouriteIdTmp = [];
 
   @override

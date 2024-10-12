@@ -35,9 +35,9 @@ class _DetailMoviePageState extends State<DetailMoviePage> {
 
     if (widget.dataParams != null) {
       String movieId = widget.dataParams[ParamsPath.idMovieParam].toString();
-      providerHome?.getMovieDetail(movieId: movieId);
-      providerHome?.getCast(movieId: movieId);
-      providerHome?.getSimilairMovie(movieId: movieId);
+      providerHome?.getDetailMovie(int.parse(movieId));
+      providerHome?.getCredits(int.parse(movieId));
+      providerHome?.getSimiliarMovie(int.parse(movieId));
     } else {
       Future.delayed(const Duration(seconds: 3)).whenComplete(() {
         Navigator.pop(context);

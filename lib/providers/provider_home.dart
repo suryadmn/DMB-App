@@ -21,6 +21,7 @@ import '../datas/models/home/top_rated_response/top_rated_result.dart';
 import '../datas/networking/url_access.dart';
 import '../datas/services_dio/settings_dio.dart';
 
+/// A class that manages the home provider functionalities such as fetching movie data.
 class ProviderHome extends ChangeNotifier {
   bool isLoadingTopRated = false;
   bool isLoadingNowPlaying = false;
@@ -30,10 +31,12 @@ class ProviderHome extends ChangeNotifier {
   bool isLoadingCredits = false;
   bool isLoadingSimiliarMovie = false;
 
+  // The total number of items for download progress tracking
   // ignore: unused_field
   int _total = 0;
   double _downProgress = 0;
 
+  /// The current download progress.
   double get downProgress => _downProgress;
 
   List<TopRatedResult>? _topRatedResult;
@@ -42,18 +45,29 @@ class ProviderHome extends ChangeNotifier {
   List<Cast>? _castList;
   List<SimilirMovieResult>? _similiarMovieResult;
 
+  /// List of top-rated movies.
   List<TopRatedResult> get topRatedResult => _topRatedResult ?? [];
+
+  /// List of currently playing movies.
   List<NowPlayingResult> get nowPlayingResult => _nowPlayingResult ?? [];
+
+  /// List of popular movies.
   List<PopularResult> get popularResult => _popularResult ?? [];
+
+  /// List of movie casts.
   List<Cast> get castList => _castList ?? [];
+
+  /// List of similar movies.
   List<SimilirMovieResult> get similiarMovieResult =>
       _similiarMovieResult ?? [];
 
   DetailMovieResponse? _detailMovieResponse;
 
+  /// Detailed movie response.
   DetailMovieResponse get detailMovie =>
       _detailMovieResponse ?? DetailMovieResponse();
 
+  /// Fetches top-rated movies from the API.
   Future<List<TopRatedResult>> getTopRated({int? accountId}) async {
     isLoadingTopRated = true;
     notifyListeners();
@@ -90,6 +104,7 @@ class ProviderHome extends ChangeNotifier {
     return _topRatedResult ?? [];
   }
 
+  /// Fetches currently playing movies from the API.
   Future<List<TopRatedResult>> getNowPlaying({int? accountId}) async {
     isLoadingNowPlaying = true;
     notifyListeners();
@@ -126,6 +141,7 @@ class ProviderHome extends ChangeNotifier {
     return _topRatedResult ?? [];
   }
 
+  /// Fetches popular movies from the API.
   Future<List<TopRatedResult>> getPopular({int? accountId}) async {
     isLoadingPopular = true;
     notifyListeners();
@@ -162,6 +178,7 @@ class ProviderHome extends ChangeNotifier {
     return _topRatedResult ?? [];
   }
 
+  /// Downloads and saves an image to storage.
   Future<void> downloadAndSaveImageToStorage(
       BuildContext context, String imageUrlPath) async {
     try {
@@ -262,91 +279,87 @@ class ProviderHome extends ChangeNotifier {
       _downProgress = 0.0;
       notifyListeners();
 
-      debugPrint('Download error: $exception');
+      debugPrint("Download error: $exception");
     }
   }
 
-  Future<DetailMovieResponse> getMovieDetail({required String movieId}) async {
+  /// Fetches movie details based on the provided [id].
+  Future<void> getDetailMovie(int id) async {
     isLoadingDetailMovie = true;
+    notifyListeners();
 
     await configDio(
       endPoint: UrlAccess.urlBase,
       authMode: 'bearer',
       token: UrlAccess.authorization,
       path:
-          '${UrlAccess.apiVersion}${UrlAccess.movies.replaceAll('s', '')}/$movieId',
+          '${UrlAccess.apiVersion}${UrlAccess.movies.replaceAll('s', '')}/$id',
     ).then((response) {
       if (response?.statusCode == 200) {
         _detailMovieResponse = DetailMovieResponse.fromJson(response?.data);
-
         isLoadingDetailMovie = false;
+        notifyListeners();
       } else {
         isLoadingDetailMovie = false;
+        notifyListeners();
 
         debugPrint(
-            'getPopular failed with status code: ${response?.statusCode}');
+            'getDetailMovie failed with status code: ${response?.statusCode}');
       }
     }).onError((error, stackTrace) {
       isLoadingDetailMovie = false;
+      notifyListeners();
 
-      debugPrint('getPopular config error: $error');
+      debugPrint('getDetailMovie config error: $error');
     });
-
-    notifyListeners();
-    return _detailMovieResponse ?? DetailMovieResponse();
   }
 
-  Future<List<Cast>> getCast({required String movieId}) async {
+  /// Fetches credits for a specific movie based on the provided [id].
+  Future<void> getCredits(int id) async {
     isLoadingCredits = true;
-
-    CreditsResponse creditsResponse = CreditsResponse();
+    notifyListeners();
 
     await configDio(
       endPoint: UrlAccess.urlBase,
       authMode: 'bearer',
       token: UrlAccess.authorization,
       path:
-          '${UrlAccess.apiVersion}${UrlAccess.movies.replaceAll('s', '')}/$movieId/${UrlAccess.credits}',
+          '${UrlAccess.apiVersion}${UrlAccess.movies.replaceAll('s', '')}/$id/credits',
     ).then((response) {
       if (response?.statusCode == 200) {
-        creditsResponse = CreditsResponse.fromJson(response?.data);
-        _castList = creditsResponse.cast ?? [];
-
+        _castList = (CreditsResponse.fromJson(response?.data)).cast ?? [];
         isLoadingCredits = false;
         notifyListeners();
       } else {
         isLoadingCredits = false;
         notifyListeners();
 
-        debugPrint('getCast failed with status code: ${response?.statusCode}');
+        debugPrint(
+            'getCredits failed with status code: ${response?.statusCode}');
       }
     }).onError((error, stackTrace) {
       isLoadingCredits = false;
       notifyListeners();
 
-      debugPrint('getCast config error: $error');
+      debugPrint('getCredits config error: $error');
     });
-
-    return _castList ?? [];
   }
 
-  Future<List<SimilirMovieResult>> getSimilairMovie(
-      {required String movieId}) async {
+  /// Fetches similar movies based on the provided [id].
+  Future<void> getSimiliarMovie(int id) async {
     isLoadingSimiliarMovie = true;
-
-    SimiliarMovieResponse similiarMovieResponse = SimiliarMovieResponse();
+    notifyListeners();
 
     await configDio(
       endPoint: UrlAccess.urlBase,
       authMode: 'bearer',
       token: UrlAccess.authorization,
       path:
-          '${UrlAccess.apiVersion}${UrlAccess.movies.replaceAll('s', '')}/$movieId/${UrlAccess.similar}',
+          '${UrlAccess.apiVersion}${UrlAccess.movies.replaceAll('s', '')}/$id/similar',
     ).then((response) {
       if (response?.statusCode == 200) {
-        similiarMovieResponse = SimiliarMovieResponse.fromJson(response?.data);
-        _similiarMovieResult = similiarMovieResponse.results ?? [];
-
+        _similiarMovieResult =
+            (SimiliarMovieResponse.fromJson(response?.data)).results ?? [];
         isLoadingSimiliarMovie = false;
         notifyListeners();
       } else {
@@ -354,31 +367,26 @@ class ProviderHome extends ChangeNotifier {
         notifyListeners();
 
         debugPrint(
-            'getSimilairMovie failed with status code: ${response?.statusCode}');
+            'getSimiliarMovie failed with status code: ${response?.statusCode}');
       }
     }).onError((error, stackTrace) {
       isLoadingSimiliarMovie = false;
       notifyListeners();
 
-      debugPrint('getSimilairMovie config error: $error');
+      debugPrint('getSimiliarMovie config error: $error');
     });
-
-    return _similiarMovieResult ?? [];
   }
 
-  Future<PermissionStatus> storageRequestPermissions() async {
-    var status = await Permission.manageExternalStorage.status;
-    if (status.isDenied) {
-      // Permission denied, request permission
-      return await Permission.manageExternalStorage.request();
-    }
-    return status; // Permission granted or already granted
-  }
-
+  /// Updates the download progress.
   void updateProgressDownloadFile(
-      BuildContext context, int total, double downProgress) {
+      BuildContext context, int total, double progress) {
     _total = total;
-    _downProgress = downProgress;
+    _downProgress = progress;
     notifyListeners();
+  }
+
+  /// Requests storage permissions.
+  Future<PermissionStatus> storageRequestPermissions() async {
+    return await Permission.storage.request();
   }
 }

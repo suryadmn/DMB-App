@@ -38,7 +38,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('This is a splash screen page'),
+        child: FlutterLogo(size: 54),
       ),
     );
   }

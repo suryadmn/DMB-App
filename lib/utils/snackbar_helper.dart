@@ -13,6 +13,8 @@ class SnackbarHelper {
   /// - [textColor] sets the color of the text inside the SnackBar.
   /// - [icon] (optional) adds an icon to the left of the text in the SnackBar.
   /// - [iconColor] sets the color of the optional icon.
+  /// - [isNeedOpenFile] (optional) indicates if the 'Open' button should be displayed.
+  /// - [openFile] (optional) is a callback function that is executed when the 'Open' button is pressed.
   ///
   /// Example usage:
   /// ```dart
@@ -41,28 +43,30 @@ class SnackbarHelper {
         content: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Display the icon if provided
             if (icon != null) ...[
-              Icon(icon, color: iconColor),
-              const SizedBox(width: 10),
+              Icon(icon, color: iconColor), // Icon on the left
+              const SizedBox(width: 10), // Spacing between icon and text
             ],
             Expanded(
-              child: Text(text, style: TextStyle(color: textColor)),
+              child: Text(text,
+                  style: TextStyle(color: textColor)), // SnackBar message
             ),
+            // Conditional rendering of the 'Open' button if needed
             isNeedOpenFile ?? false
                 ? TextButton(
-                    onPressed: openFile,
+                    onPressed: openFile, // Action for the button
                     child: Text(
                       'Open',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.w700), // Button text style
                     ))
-                : const SizedBox(),
+                : const SizedBox(), // Empty widget if no button is needed
           ],
         ),
-        backgroundColor: backgroundColor,
-        duration: snackbarDuration ?? const Duration(seconds: 4),
+        backgroundColor: backgroundColor, // Background color for SnackBar
+        duration: snackbarDuration ??
+            const Duration(seconds: 4), // Duration of display
       ),
     );
   }
