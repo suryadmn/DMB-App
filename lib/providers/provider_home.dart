@@ -268,7 +268,6 @@ class ProviderHome extends ChangeNotifier {
 
   Future<DetailMovieResponse> getMovieDetail({required String movieId}) async {
     isLoadingDetailMovie = true;
-    notifyListeners();
 
     await configDio(
       endPoint: UrlAccess.urlBase,
@@ -281,27 +280,24 @@ class ProviderHome extends ChangeNotifier {
         _detailMovieResponse = DetailMovieResponse.fromJson(response?.data);
 
         isLoadingDetailMovie = false;
-        notifyListeners();
       } else {
         isLoadingDetailMovie = false;
-        notifyListeners();
 
         debugPrint(
             'getPopular failed with status code: ${response?.statusCode}');
       }
     }).onError((error, stackTrace) {
       isLoadingDetailMovie = false;
-      notifyListeners();
 
       debugPrint('getPopular config error: $error');
     });
 
+    notifyListeners();
     return _detailMovieResponse ?? DetailMovieResponse();
   }
 
   Future<List<Cast>> getCast({required String movieId}) async {
     isLoadingCredits = true;
-    notifyListeners();
 
     CreditsResponse creditsResponse = CreditsResponse();
 
@@ -337,7 +333,6 @@ class ProviderHome extends ChangeNotifier {
   Future<List<SimilirMovieResult>> getSimilairMovie(
       {required String movieId}) async {
     isLoadingSimiliarMovie = true;
-    notifyListeners();
 
     SimiliarMovieResponse similiarMovieResponse = SimiliarMovieResponse();
 

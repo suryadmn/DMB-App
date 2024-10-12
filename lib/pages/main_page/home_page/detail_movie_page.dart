@@ -51,175 +51,179 @@ class _DetailMoviePageState extends State<DetailMoviePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height / 1.5,
-              decoration: BoxDecoration(
-                // borderRadius: const BorderRadius.all(Radius.circular(12)),
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider(
-                    "${UrlAccess.urlBaseMedia}${Provider.of<ProviderHome>(context).detailMovie.posterPath}",
-                  ),
-                  fit: BoxFit
-                      .cover, // Ensures the image covers the entire container
-                  colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(
-                        0.3), // Optional dark overlay for better readability
-                    BlendMode.darken,
-                  ),
-                ),
-              ),
+      body: Provider.of<ProviderHome>(context).isLoadingDetailMovie
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 40, right: 20),
-                    child: Container(
-                      width: 54, // Set the desired width
-                      height: 54, // Set the desired height
-                      decoration: BoxDecoration(
-                        color: ColorPalleteHelper.gray500
-                            .withOpacity(0.5), // Background color
-                        shape: BoxShape.circle, // Circular shape
-                      ),
-                      child: Center(
-                        child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(
-                            size: 28,
-                            Icons.close_rounded,
-                            color: ColorPalleteHelper.white,
-                          ),
+                  Container(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height / 1.5,
+                    decoration: BoxDecoration(
+                      // borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      image: DecorationImage(
+                        image: CachedNetworkImageProvider(
+                          "${UrlAccess.urlBaseMedia}${Provider.of<ProviderHome>(context).detailMovie.posterPath}",
+                        ),
+                        fit: BoxFit
+                            .cover, // Ensures the image covers the entire container
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(
+                              0.3), // Optional dark overlay for better readability
+                          BlendMode.darken,
                         ),
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      Stack(
-                        children: [
-                          // Shadow-like background for the title
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 4.0, vertical: 2.0),
-                            color: Colors.black.withOpacity(
-                                0.5), // Semi-transparent background
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20, right: 20, top: 8),
-                              child: Text(
-                                Provider.of<ProviderHome>(context)
-                                        .detailMovie
-                                        .title ??
-                                    "",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineLarge!
-                                    .copyWith(
-                                      color: ColorPalleteHelper.white,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 40, right: 20),
+                          child: Container(
+                            width: 54, // Set the desired width
+                            height: 54, // Set the desired height
+                            decoration: BoxDecoration(
+                              color: ColorPalleteHelper.gray500
+                                  .withOpacity(0.5), // Background color
+                              shape: BoxShape.circle, // Circular shape
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                icon: const Icon(
+                                  size: 28,
+                                  Icons.close_rounded,
+                                  color: ColorPalleteHelper.white,
+                                ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      posterBodyText(
-                        text: Provider.of<ProviderHome>(context)
-                                .detailMovie
-                                .overview ??
-                            "",
-                        maxLines: 4,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Actors',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(width: 8.0),
-                      TextButton(
-                          onPressed: () {},
-                          child: const Row(
-                            children: [
-                              Text('SEE ALL'),
-                              SizedBox(width: 8.0),
-                              Icon(Icons.chevron_right_rounded)
-                            ],
-                          ))
-                    ],
-                  ),
-                  actorList(),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Information',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(width: 8.0),
-                    ],
+                        ),
+                        Column(
+                          children: [
+                            Stack(
+                              children: [
+                                // Shadow-like background for the title
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.0, vertical: 2.0),
+                                  color: Colors.black.withOpacity(
+                                      0.5), // Semi-transparent background
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20, right: 20, top: 8),
+                                    child: Text(
+                                      Provider.of<ProviderHome>(context)
+                                              .detailMovie
+                                              .title ??
+                                          "",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineLarge!
+                                          .copyWith(
+                                            color: ColorPalleteHelper.white,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            posterBodyText(
+                              text: Provider.of<ProviderHome>(context)
+                                      .detailMovie
+                                      .overview ??
+                                  "",
+                              maxLines: 4,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  information(),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Similar Movie',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(width: 8.0),
-                      TextButton(
-                          onPressed: () {},
-                          child: const Row(
-                            children: [
-                              Text('SEE ALL'),
-                              SizedBox(width: 8.0),
-                              Icon(Icons.chevron_right_rounded)
-                            ],
-                          ))
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Actors',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(width: 8.0),
+                            TextButton(
+                                onPressed: () {},
+                                child: const Row(
+                                  children: [
+                                    Text('SEE ALL'),
+                                    SizedBox(width: 8.0),
+                                    Icon(Icons.chevron_right_rounded)
+                                  ],
+                                ))
+                          ],
+                        ),
+                        actorList(),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Information',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(width: 8.0),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        information(),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Similar Movie',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(width: 8.0),
+                            TextButton(
+                                onPressed: () {},
+                                child: const Row(
+                                  children: [
+                                    Text('SEE ALL'),
+                                    SizedBox(width: 8.0),
+                                    Icon(Icons.chevron_right_rounded)
+                                  ],
+                                ))
+                          ],
+                        ),
+                        similiarMovieList(),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
-                  similiarMovieList(),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 
