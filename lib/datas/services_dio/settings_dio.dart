@@ -122,7 +122,9 @@ Future<Response?> configDio({
           onReceiveProgress: (rcv, total) {
             String downProgress = ((rcv / total) * 100).toStringAsFixed(0);
             onProgress!(
-                total, downProgress); // Callback to track download progress
+              total,
+              downProgress,
+            ); // Callback to track download progress
           },
         );
         break;

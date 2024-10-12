@@ -39,7 +39,9 @@ class RouteGenerator {
       favouriteMovieRoute: (_) => const FavouriteMoviePage(),
 
       // Detail Movie route
-      detailMovieRoute: (_) => const DetailMoviePage(),
+      detailMovieRoute: (_) => DetailMoviePage(
+            dataParams: args,
+          ),
     };
 
     // Get the widget builder for the route

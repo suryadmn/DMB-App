@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../datas/networking/url_access.dart';
+import '../../../../datas/params/params_path.dart';
+import '../../../../datas/routes/route_name.dart';
 import '../../../../providers/provider_home.dart';
 import '../../../../providers/provider_profile.dart';
 import '../../../../utils/color_pallete_helper.dart';
+import '../../../../utils/flushbar_helper.dart';
 import '../../../../utils/shared_preferences_helper.dart';
 import '../../../../utils/snackbar_helper.dart';
 import '../../../../widgets/shimmer_widget.dart';
@@ -65,92 +68,205 @@ class _PopularSessionState extends State<PopularSession> {
                         height: 300.0,
                         width: 200.0,
                       )
-                    : Container(
-                        width: 200.0,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12)),
-                          image: DecorationImage(
-                            image: CachedNetworkImageProvider(
-                              "${UrlAccess.urlBaseMedia}${Provider.of<ProviderHome>(context).popularResult[index].posterPath ?? ""}",
-                            ),
-                            fit: BoxFit
-                                .cover, // Ensures the image covers the entire container
-                            colorFilter: ColorFilter.mode(
-                              Colors.black.withOpacity(
-                                  0.3), // Optional dark overlay for better readability
-                              BlendMode.darken,
+                    : GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, detailMovieRoute,
+                              arguments: {
+                                ParamsPath.idMovieParam:
+                                    Provider.of<ProviderHome>(context,
+                                                listen: false)
+                                            .popularResult[index]
+                                            .id ??
+                                        0
+                              });
+                        },
+                        child: Container(
+                          width: 200.0,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
+                            image: DecorationImage(
+                              image: CachedNetworkImageProvider(
+                                "${UrlAccess.urlBaseMedia}${Provider.of<ProviderHome>(context).popularResult[index].posterPath ?? ""}",
+                              ),
+                              fit: BoxFit
+                                  .cover, // Ensures the image covers the entire container
+                              colorFilter: ColorFilter.mode(
+                                Colors.black.withOpacity(
+                                    0.3), // Optional dark overlay for better readability
+                                BlendMode.darken,
+                              ),
                             ),
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const SizedBox(),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 44, // Set the desired width
-                                        height: 44, // Set the desired height
-                                        decoration: BoxDecoration(
-                                          color: ColorPalleteHelper
-                                              .white, // Background color
-                                          shape:
-                                              BoxShape.circle, // Circular shape
-                                          border: Border.all(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const SizedBox(),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 44, // Set the desired width
+                                          height: 44, // Set the desired height
+                                          decoration: BoxDecoration(
                                             color: ColorPalleteHelper
-                                                .white, // Outline color
-                                            width: 2.0, // Border width
+                                                .white, // Background color
+                                            shape: BoxShape
+                                                .circle, // Circular shape
+                                            border: Border.all(
+                                              color: ColorPalleteHelper
+                                                  .white, // Outline color
+                                              width: 2.0, // Border width
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: IconButton(
+                                              onPressed: () {
+                                                if (watchlistIdTmp.isEmpty) {
+                                                  watchlistIdTmp.add(Provider
+                                                              .of<ProviderHome>(
+                                                                  context,
+                                                                  listen: false)
+                                                          .popularResult[index]
+                                                          .id ??
+                                                      0);
+                                                  setState(() {});
+                                                } else {
+                                                  List<int> toAdd =
+                                                      []; // Temporary list to hold elements to add
+
+                                                  for (var element
+                                                      in watchlistIdTmp) {
+                                                    if (element !=
+                                                        Provider.of<ProviderHome>(
+                                                                context,
+                                                                listen: false)
+                                                            .popularResult[
+                                                                index]
+                                                            .id) {
+                                                      toAdd.add(Provider.of<
+                                                                      ProviderHome>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .popularResult[
+                                                                  index]
+                                                              .id ??
+                                                          0);
+                                                    }
+                                                  }
+
+                                                  watchlistIdTmp.addAll(toAdd);
+
+                                                  setState(() {});
+
+                                                  addWatchlist(
+                                                      movieId: Provider.of<
+                                                                      ProviderHome>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .popularResult[
+                                                                  index]
+                                                              .id ??
+                                                          0);
+                                                }
+                                              },
+                                              icon: Icon(
+                                                size: 24,
+                                                Icons.bookmark_rounded,
+                                                color:
+                                                    Provider.of<ProviderProfile>(
+                                                                    context)
+                                                                .movieListResult
+                                                                .any(
+                                                                  (element) =>
+                                                                      element
+                                                                          .id ==
+                                                                      Provider.of<ProviderHome>(
+                                                                              context)
+                                                                          .popularResult[
+                                                                              index]
+                                                                          .id,
+                                                                ) ||
+                                                            watchlistIdTmp.any(
+                                                              (element) =>
+                                                                  element ==
+                                                                  Provider.of<ProviderHome>(
+                                                                          context)
+                                                                      .popularResult[
+                                                                          index]
+                                                                      .id,
+                                                            )
+                                                        ? ColorPalleteHelper
+                                                            .primary500
+                                                        : ColorPalleteHelper
+                                                            .gray500,
+                                              ),
+                                              // Icon color
+                                            ),
                                           ),
                                         ),
-                                        child: Center(
-                                          child: IconButton(
-                                            onPressed: () {
-                                              if (watchlistIdTmp.isEmpty) {
-                                                watchlistIdTmp.add(Provider.of<
-                                                                ProviderHome>(
-                                                            context,
-                                                            listen: false)
-                                                        .popularResult[index]
-                                                        .id ??
-                                                    0);
-                                                setState(() {});
-                                              } else {
+                                        const SizedBox(width: 8.0),
+                                        Container(
+                                          width: 44, // Set the desired width
+                                          height: 44, // Set the desired height
+                                          decoration: BoxDecoration(
+                                            color: ColorPalleteHelper
+                                                .white, // Background color
+                                            shape: BoxShape
+                                                .circle, // Circular shape
+                                            border: Border.all(
+                                              color: ColorPalleteHelper
+                                                  .white, // Outline color
+                                              width: 2.0, // Border width
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: IconButton(
+                                              onPressed: () {
                                                 List<int> toAdd =
                                                     []; // Temporary list to hold elements to add
 
-                                                for (var element
-                                                    in watchlistIdTmp) {
-                                                  if (element !=
-                                                      Provider.of<ProviderHome>(
+                                                if (favouriteIdTmp.isNotEmpty) {
+                                                  for (var element
+                                                      in favouriteIdTmp) {
+                                                    if (element !=
+                                                        Provider.of<ProviderHome>(
+                                                                context,
+                                                                listen: false)
+                                                            .popularResult[
+                                                                index]
+                                                            .id) {
+                                                      toAdd.add(Provider.of<
+                                                                      ProviderHome>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .popularResult[
+                                                                  index]
+                                                              .id ??
+                                                          0);
+                                                    }
+                                                  }
+                                                } else {
+                                                  toAdd.add(Provider.of<
+                                                                  ProviderHome>(
                                                               context,
                                                               listen: false)
                                                           .popularResult[index]
-                                                          .id) {
-                                                    toAdd.add(
-                                                        Provider.of<ProviderHome>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .popularResult[
-                                                                    index]
-                                                                .id ??
-                                                            0);
-                                                  }
+                                                          .id ??
+                                                      0);
                                                 }
 
-                                                watchlistIdTmp.addAll(toAdd);
+                                                favouriteIdTmp.addAll(toAdd);
 
                                                 setState(() {});
 
-                                                addWatchlist(
+                                                addFavourite(
                                                     movieId:
                                                         Provider.of<ProviderHome>(
                                                                     context,
@@ -160,184 +276,110 @@ class _PopularSessionState extends State<PopularSession> {
                                                                     index]
                                                                 .id ??
                                                             0);
-                                              }
-                                            },
-                                            icon: Icon(
-                                              size: 24,
-                                              Icons.bookmark_rounded,
-                                              color:
-                                                  Provider.of<ProviderProfile>(
-                                                                  context)
-                                                              .movieListResult
-                                                              .any(
-                                                                (element) =>
-                                                                    element
-                                                                        .id ==
-                                                                    Provider.of<ProviderHome>(
-                                                                            context)
-                                                                        .popularResult[
-                                                                            index]
-                                                                        .id,
-                                                              ) ||
-                                                          watchlistIdTmp.any(
-                                                            (element) =>
-                                                                element ==
-                                                                Provider.of<ProviderHome>(
-                                                                        context)
-                                                                    .popularResult[
-                                                                        index]
-                                                                    .id,
-                                                          )
-                                                      ? ColorPalleteHelper
-                                                          .primary500
-                                                      : ColorPalleteHelper
-                                                          .gray500,
+                                              },
+                                              icon: Icon(
+                                                size: 24,
+                                                Icons.favorite_rounded,
+                                                color: Provider.of<ProviderProfile>(
+                                                                context)
+                                                            .favouriteMovieResult
+                                                            .any(
+                                                              (element) =>
+                                                                  element.id ==
+                                                                  Provider.of<ProviderHome>(
+                                                                          context)
+                                                                      .popularResult[
+                                                                          index]
+                                                                      .id,
+                                                            ) ||
+                                                        favouriteIdTmp.any(
+                                                          (element) =>
+                                                              element ==
+                                                              Provider.of<ProviderHome>(
+                                                                      context)
+                                                                  .popularResult[
+                                                                      index]
+                                                                  .id,
+                                                        )
+                                                    ? ColorPalleteHelper.pink
+                                                    : ColorPalleteHelper
+                                                        .gray500,
+                                              ),
+                                              // Icon color
                                             ),
-                                            // Icon color
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 8.0),
-                                      Container(
-                                        width: 44, // Set the desired width
-                                        height: 44, // Set the desired height
-                                        decoration: BoxDecoration(
-                                          color: ColorPalleteHelper
-                                              .white, // Background color
-                                          shape:
-                                              BoxShape.circle, // Circular shape
-                                          border: Border.all(
+                                        const SizedBox(width: 8.0),
+                                        Container(
+                                          width: 44, // Set the desired width
+                                          height: 44, // Set the desired height
+                                          decoration: BoxDecoration(
                                             color: ColorPalleteHelper
-                                                .white, // Outline color
-                                            width: 2.0, // Border width
+                                                .white, // Background color
+                                            shape: BoxShape
+                                                .circle, // Circular shape
+                                            border: Border.all(
+                                              color: ColorPalleteHelper
+                                                  .white, // Outline color
+                                              width: 2.0, // Border width
+                                            ),
                                           ),
-                                        ),
-                                        child: Center(
-                                          child: IconButton(
-                                            onPressed: () {
-                                              List<int> toAdd =
-                                                  []; // Temporary list to hold elements to add
-
-                                              if (favouriteIdTmp.isNotEmpty) {
-                                                for (var element
-                                                    in favouriteIdTmp) {
-                                                  if (element !=
-                                                      Provider.of<ProviderHome>(
-                                                              context,
-                                                              listen: false)
-                                                          .popularResult[index]
-                                                          .id) {
-                                                    toAdd.add(
-                                                        Provider.of<ProviderHome>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .popularResult[
-                                                                    index]
-                                                                .id ??
-                                                            0);
-                                                  }
+                                          child: Center(
+                                            child: IconButton(
+                                              onPressed: () {
+                                                if (Provider.of<ProviderHome>(
+                                                        context,
+                                                        listen: false)
+                                                    .isLoadingDownloadImage) {
+                                                  FlushbarHelper.show(
+                                                    context,
+                                                    'Downloading still progress!',
+                                                    status: 'w',
+                                                  );
+                                                } else {
+                                                  widget.providerHome
+                                                      .downloadAndSaveImageToStorage(
+                                                          context,
+                                                          Provider.of<ProviderHome>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .popularResult[
+                                                                      index]
+                                                                  .posterPath ??
+                                                              "");
                                                 }
-                                              } else {
-                                                toAdd.add(Provider.of<
-                                                                ProviderHome>(
-                                                            context,
-                                                            listen: false)
-                                                        .popularResult[index]
-                                                        .id ??
-                                                    0);
-                                              }
-
-                                              favouriteIdTmp.addAll(toAdd);
-
-                                              setState(() {});
-
-                                              addFavourite(
-                                                  movieId: Provider.of<
-                                                                  ProviderHome>(
-                                                              context,
-                                                              listen: false)
-                                                          .popularResult[index]
-                                                          .id ??
-                                                      0);
-                                            },
-                                            icon: Icon(
-                                              size: 24,
-                                              Icons.favorite_rounded,
-                                              color: Provider.of<ProviderProfile>(
-                                                              context)
-                                                          .favouriteMovieResult
-                                                          .any(
-                                                            (element) =>
-                                                                element.id ==
-                                                                Provider.of<ProviderHome>(
-                                                                        context)
-                                                                    .popularResult[
-                                                                        index]
-                                                                    .id,
-                                                          ) ||
-                                                      favouriteIdTmp.any(
-                                                        (element) =>
-                                                            element ==
-                                                            Provider.of<ProviderHome>(
-                                                                    context)
-                                                                .popularResult[
-                                                                    index]
-                                                                .id,
-                                                      )
-                                                  ? ColorPalleteHelper.pink
-                                                  : ColorPalleteHelper.gray500,
+                                              },
+                                              icon: const Icon(
+                                                size: 24,
+                                                Icons.download_rounded,
+                                                color:
+                                                    ColorPalleteHelper.success,
+                                              ),
+                                              // Icon color
                                             ),
-                                            // Icon color
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 8.0),
-                                      Container(
-                                        width: 44, // Set the desired width
-                                        height: 44, // Set the desired height
-                                        decoration: BoxDecoration(
-                                          color: ColorPalleteHelper
-                                              .white, // Background color
-                                          shape:
-                                              BoxShape.circle, // Circular shape
-                                          border: Border.all(
-                                            color: ColorPalleteHelper
-                                                .white, // Outline color
-                                            width: 2.0, // Border width
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              size: 24,
-                                              Icons.download_rounded,
-                                              color: ColorPalleteHelper.success,
-                                            ),
-                                            // Icon color
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                Provider.of<ProviderHome>(context)
-                                        .popularResult[index]
-                                        .title ??
-                                    "",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineSmall!
-                                    .copyWith(
-                                        color: ColorPalleteHelper.white,
-                                        fontWeight: FontWeight.w700),
-                              ),
-                            ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  Provider.of<ProviderHome>(context)
+                                          .popularResult[index]
+                                          .title ??
+                                      "",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall!
+                                      .copyWith(
+                                          color: ColorPalleteHelper.white,
+                                          fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

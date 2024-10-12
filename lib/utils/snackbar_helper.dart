@@ -33,6 +33,8 @@ class SnackbarHelper {
     Color? textColor,
     IconData? icon,
     Color? iconColor,
+    bool? isNeedOpenFile,
+    Function()? openFile,
   }) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -46,6 +48,17 @@ class SnackbarHelper {
             Expanded(
               child: Text(text, style: TextStyle(color: textColor)),
             ),
+            isNeedOpenFile ?? false
+                ? TextButton(
+                    onPressed: openFile,
+                    child: Text(
+                      'Open',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontWeight: FontWeight.w700),
+                    ))
+                : const SizedBox(),
           ],
         ),
         backgroundColor: backgroundColor,

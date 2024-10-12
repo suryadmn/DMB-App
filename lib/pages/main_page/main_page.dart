@@ -1,4 +1,7 @@
+import 'package:dmb_app/providers/provider_home.dart';
+import 'package:dmb_app/utils/color_pallete_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'home_page/home_page.dart';
 import 'profile_page/profile_page.dart';
@@ -36,7 +39,49 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: children[currentIndex], // Display the selected tab content
+      body: Stack(
+        children: [
+          children[currentIndex],
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Visibility(
+              visible:
+                  Provider.of<ProviderHome>(context).isLoadingDownloadImage,
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    decoration: const BoxDecoration(
+                      color: ColorPalleteHelper.primary100,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          child: Text(
+                            "Downloading... ${Provider.of<ProviderHome>(context).downProgress.toInt()}%",
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          child: const LinearProgressIndicator(
+                            backgroundColor: Colors.white,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ), // Display the selected tab content
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex, // Set the currently selected tab
         onTap: onTabTapped, // Handle tab changes

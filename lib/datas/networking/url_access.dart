@@ -2,8 +2,7 @@
 class UrlAccess {
   /// Base URL for the API.
   static String urlBase = "https://api.themoviedb.org/";
-  static String urlBaseMedia =
-      "https://media.themoviedb.org/t/p/w220_and_h330_face";
+  static String urlBaseMedia = "https://image.tmdb.org/t/p/original";
 
   /// API version.
   static String apiVersion = "3/";
@@ -45,9 +44,15 @@ class UrlAccess {
   /// Path for requesting top rated.
   static String topRated = "top_rated";
 
-  /// Path for requesting top rated.
+  /// Path for requesting now playing.
   static String nowPlaying = "now_playing";
 
-  /// Path for requesting top rated.
+  /// Path for requesting popular.
   static String popular = "popular";
+
+  /// Path for requesting credits.
+  static String credits = "credits";
+
+  /// Path for requesting similar.
+  static String similar = "similar";
 }
