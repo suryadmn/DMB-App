@@ -387,6 +387,11 @@ class ProviderHome extends ChangeNotifier {
 
   /// Requests storage permissions.
   Future<PermissionStatus> storageRequestPermissions() async {
-    return await Permission.storage.request();
+    var status = await Permission.manageExternalStorage.status;
+    if (status.isDenied) {
+      // Permission denied, request permission
+      return await Permission.manageExternalStorage.request();
+    }
+    return status; // Permission granted or already granted
   }
 }
